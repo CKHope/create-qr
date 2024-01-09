@@ -61,7 +61,13 @@ if entered_password == password:
                         zipf.write(f"qrcode_{i+1}.png")
 
             # Hiển thị link để tải xuống file ZIP
-            st.success(f"[Tải xuống ZIP]({zip_filename})")
+            with open(zip_filename, "rb") as file:
+                st.download_button(
+                    label="Tải xuống ZIP",
+                    data=file.read(),
+file_name=zip_filename,
+                    key="download_button",
+                )
 
     # Hỏi bạn còn điều gì cần hỗ trợ không?
 else:
