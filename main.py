@@ -2,53 +2,64 @@
 import streamlit as st
 import qrcode
 from PIL import Image
+import zipfile
 
-# Tiêu đề của ứng dụng
-st.title("QR Code Generator")
+# Set password
+password = "daiphaphao"
 
-# Text area để người dùng nhập đường link
-links = st.text_area("Nhập các đường link (mỗi dòng là một link):")
+# Nhập mật khẩu từ người dùng
+entered_password = st.text_input("Nhập mật khẩu:", type="password")
 
-# Chia các đường link thành list
-link_list = links.split("\n")
+# Kiểm tra mật khẩu
+if entered_password == password:
+    # Tiêu đề của ứng dụng
+    st.title("QR Code Generator")
 
-# Duyệt qua từng đường link và tạo QR Code
-for link in link_list:
-    if link:
-        qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=10,
-            border=4,
-        )
-        qr.add_data(link)
-        qr.make(fit=True)
+    # Text area để người dùng nhập đường link
+    links = st.text_area("Nhập các đường link(mỗi dòng là một link):")
 
-        # Tạo hình ảnh QR Code
-        img = qr.make_image(fill_color="black", back_color="white")
+    # Chia các đường link thành list
+    link_list = links.split("\n")
 
-        # Chuyển đổi ảnh thành định dạng RGB
-        img = img.convert("RGB")
+    # Duyệt qua từng đường link và tạo QR Code
+    for link in link_list:
+        if link:
+            qr = qrcode.QRCode(
+                version=1,
+                error_correction=qrcode.constants.ERROR_CORRECT_L,
+                box_size=10,
+                border=4,
+            )
+            qr.add_data(link)
+            qr.make(fit=True)
 
-        # Hiển thị QR Code
-        st.image(img, caption=f"Link: {link}", use_column_width=True)
+            # Tạo hình ảnh QR Code
+            img = qr.make_image(fill_color="black", back_color="white")
 
-# Tạo nút để tải xuống QR Code
-if st.button("Tải xuống tất cả QR Codes"):
-    zip_filename = "qrcodes.zip"
+            # Chuyển đổi ảnh thành định dạng RGB
+            img = img.convert("RGB")
 
-    with st.spinner("Đang tạo file ZIP..."):
-        # Lưu từng QR Code vào file PNG và thêm vào ZIP
-        with zipfile.ZipFile(zip_filename, "w") as zipf:
-            for i, link in enumerate(link_list):
-                if link:
-                    qr.add_data(link)
-                    img = qr.make_image(fill_color="black", back_color="white")
-                    img = img.convert("RGB")
-                    img.save(f"qrcode_{i+1}.png")
-                    zipf.write(f"qrcode_{i+1}.png")
+            # Hiển thị QR Code
+            st.image(img, caption=f"Link: {link}", use_column_width=True)
 
-    # Hiển thị link để tải xuống file ZIP
-    st.success(f"[Tải xuống ZIP]({zip_filename})")
+    # Tạo nút để tải xuống QR Code
+    if st.button("Tải xuống tất cả QR Codes"):
+        zip_filename = "qrcodes.zip"
 
-# Hỏi bạn còn điều gì cần hỗ trợ không?
+        with st.spinner("Đang tạo file ZIP..."):
+            # Lưu từng QR Code vào file PNG và thêm vào ZIP
+            with zipfile.ZipFile(zip_filename, "w") as zipf:
+                for i, link in enumerate(link_list):
+                    if link:
+                        qr.add_data(link)
+                        img = qr.make_image(fill_color="black", back_color="white")
+                        img = img.convert("RGB")
+                        img.save(f"qrcode_{i+1}.png")
+                        zipf.write(f"qrcode_{i+1}.png")
+
+        # Hiển thị link để tải xuống file ZIP
+        st.success(f"[Tải xuống ZIP]({zip_filename})")
+
+    # Hỏi bạn còn điều gì cần hỗ trợ không?
+else:
+    st.error("Mật khẩu không chính xác. Vui lòng thử lại.")
