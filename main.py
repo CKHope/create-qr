@@ -6,7 +6,7 @@ import zipfile
 import re  # Thêm thư viện regex
 
 # Set password
-password = "your_password"
+password = "daiphaphao"
 
 # Nhập mật khẩu từ người dùng
 entered_password = st.text_input("Nhập mật khẩu:", type="password")
