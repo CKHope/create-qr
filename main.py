@@ -4,6 +4,7 @@ import qrcode
 from PIL import Image
 import zipfile
 import re  # Thêm thư viện regex
+import os
 
 # Set password
 password = "daiphaphao"
@@ -27,7 +28,7 @@ if entered_password == password:
         st.warning("Không có đường link hợp lệ. Vui lòng nhập lại.")
     else:
         # Duyệt qua từng đường link và tạo QR Code
-        for link in link_list:
+        for i, link in enumerate(link_list):
             qr = qrcode.QRCode(
                 version=1,
                 error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -43,6 +44,14 @@ if entered_password == password:
             # Chuyển đổi ảnh thành định dạng RGB
             img = img.convert("RGB")
 
+            # Lấy tên file từ các ký tự hợp lệ trong đường link
+            valid_chars = f"-_.() abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+            filename = "".join(c if c in valid_chars else "_" for c in link)
+
+            # Lưu ảnh với tên file hợp lệ
+            img_path = f"qrcode_{i+1}_{filename}.png"
+            img.save(img_path)
+
             # Hiển thị QR Code
             # st.image(img, caption=f"Link: {link}", use_column_width=True)
 
@@ -57,18 +66,26 @@ if entered_password == password:
                         qr.add_data(link)
                         img = qr.make_image(fill_color="black", back_color="white")
                         img = img.convert("RGB")
-                        img.save(f"{i+1}_{link}.png")
-                        zipf.write(f"{i+1}_{link}.png")
+
+                        # Lấy tên file từ các ký tự hợp lệ trong đường link
+                        filename = "".join(c if c in valid_chars else "_" for c in link)
+                        img_path = f"qrcode_{i+1}_{filename}.png"
+
+                        img.save(img_path)
+                        zipf.write(img_path)
+
+                        # Xóa ảnh sau khi thêm vào ZIP để tránh tạo nhiều ảnh lưu trên server
+                        os.remove(img_path)
 
             # Hiển thị link để tải xuống file ZIP
             with open(zip_filename, "rb") as file:
                 st.download_button(
                     label="Tải xuống ZIP",
                     data=file.read(),
-file_name=zip_filename,
+                    file_name=zip_filename,
                     key="download_button",
                 )
 
-    # Hỏi bạn còn điều gì cần hỗ trợ không?
+    # Hỏi bạn còn điều gìcần hỗ trợ không?
 else:
     st.error("Mật khẩu không chính xác. Vui lòng thử lại.")
