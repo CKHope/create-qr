@@ -57,8 +57,8 @@ if entered_password == password:
                         qr.add_data(link)
                         img = qr.make_image(fill_color="black", back_color="white")
                         img = img.convert("RGB")
-                        img.save(f"qrcode_{i+1}.png")
-                        zipf.write(f"qrcode_{i+1}.png")
+                        img.save(f"{i+1}_{link}.png")
+                        zipf.write(f"{i+1}_{link}.png")
 
             # Hiển thị link để tải xuống file ZIP
             with open(zip_filename, "rb") as file:
