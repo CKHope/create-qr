@@ -22,42 +22,46 @@ if entered_password == password:
     # Chia các đường link thành list và loại bỏ các dòng trống hoặc không phải là đường link
     link_list = [line.strip() for line in links.split("\n") if line.strip() and re.match(r'^https?://', line)]
 
-    # Duyệt qua từng đường link và tạo QR Code
-    for link in link_list:
-        qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=10,
-            border=4,
-        )
-        qr.add_data(link)
-        qr.make(fit=True)
+    # Kiểm tra xem có đường link hợp lệ không
+    if not link_list:
+        st.warning("Không có đường link hợp lệ. Vui lòng nhập lại.")
+    else:
+        # Duyệt qua từng đường link và tạo QR Code
+        for link in link_list:
+            qr = qrcode.QRCode(
+                version=1,
+                error_correction=qrcode.constants.ERROR_CORRECT_L,
+                box_size=10,
+                border=4,
+            )
+            qr.add_data(link)
+            qr.make(fit=True)
 
-        # Tạo hình ảnh QR Code
-        img = qr.make_image(fill_color="black", back_color="white")
+            # Tạo hình ảnh QR Code
+            img = qr.make_image(fill_color="black", back_color="white")
 
-        # Chuyển đổi ảnh thành định dạng RGB
-        img = img.convert("RGB")
+            # Chuyển đổi ảnh thành định dạng RGB
+            img = img.convert("RGB")
 
-        # Hiển thị QR Code
-        st.image(img, caption=f"Link: {link}", use_column_width=True)
+            # Hiển thị QR Code
+            st.image(img, caption=f"Link: {link}", use_column_width=True)
 
-    # Tạo nút để tải xuống QR Code
-    if st.button("Tải xuống tất cả QR Codes"):
-        zip_filename = "qrcodes.zip"
+        # Tạo nút để tải xuống QR Code
+        if st.button("Tải xuống tất cả QR Codes"):
+            zip_filename = "qrcodes.zip"
 
-        with st.spinner("Đang tạo file ZIP..."):
-            # Lưu từng QR Code vào file PNG và thêm vào ZIP
-            with zipfile.ZipFile(zip_filename, "w") as zipf:
-                for i, link in enumerate(link_list):
-                    qr.add_data(link)
-                    img = qr.make_image(fill_color="black", back_color="white")
-                    img = img.convert("RGB")
-                    img.save(f"qrcode_{i+1}.png")
-                    zipf.write(f"qrcode_{i+1}.png")
+            with st.spinner("Đang tạo file ZIP..."):
+                # Lưu từng QR Code vào file PNG và thêm vào ZIP
+                with zipfile.ZipFile(zip_filename, "w") as zipf:
+                    for i, link in enumerate(link_list):
+                        qr.add_data(link)
+                        img = qr.make_image(fill_color="black", back_color="white")
+                        img = img.convert("RGB")
+                        img.save(f"qrcode_{i+1}.png")
+                        zipf.write(f"qrcode_{i+1}.png")
 
-        # Hiển thị link để tải xuống file ZIP
-        st.success(f"[Tải xuống ZIP]({zip_filename})")
+            # Hiển thị link để tải xuống file ZIP
+            st.success(f"[Tải xuống ZIP]({zip_filename})")
 
     # Hỏi bạn còn điều gì cần hỗ trợ không?
 else:
