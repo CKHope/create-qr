@@ -53,7 +53,7 @@ if entered_password == password:
             img.save(img_path)
 
             # Hiển thị QR Code
-            # st.image(img, caption=f"Link: {link}", use_column_width=True)
+            st.image(img, caption=f"Link: {link}", use_column_width=True)
 
         # Tạo nút để tải xuống QR Code
         if st.button("Tải xuống tất cả QR Codes"):
@@ -63,7 +63,15 @@ if entered_password == password:
                 # Lưu từng QR Code vào file PNG và thêm vào ZIP
                 with zipfile.ZipFile(zip_filename, "w") as zipf:
                     for i, link in enumerate(link_list):
+                        qr = qrcode.QRCode(
+                            version=1,
+                            error_correction=qrcode.constants.ERROR_CORRECT_L,
+                            box_size=10,
+                            border=4,
+                        )
                         qr.add_data(link)
+                        qr.make(fit=True)
+
                         img = qr.make_image(fill_color="black", back_color="white")
                         img = img.convert("RGB")
 
@@ -86,6 +94,6 @@ if entered_password == password:
                     key="download_button",
                 )
 
-    # Hỏi bạn còn điều gìcần hỗ trợ không?
+    # Hỏi bạn còn điều gì cần hỗ trợ không?
 else:
     st.error("Mật khẩu không chính xác. Vui lòng thử lại.")
