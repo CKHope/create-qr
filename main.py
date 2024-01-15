@@ -53,7 +53,7 @@ if entered_password == password:
             img.save(img_path)
 
             # Hiển thị QR Code
-            st.image(img, caption=f"Link: {link}", use_column_width=True)
+            # st.image(img, caption=f"Link: {link}", use_column_width=True)
 
         # Tạo nút để tải xuống QR Code
         if st.button("Tải xuống tất cả QR Codes"):
